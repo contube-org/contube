@@ -4,7 +4,6 @@ import com.zikeyang.contube.api.Context;
 import com.zikeyang.contube.api.Sink;
 import com.zikeyang.contube.api.TubeRecord;
 import com.zikeyang.contube.common.Utils;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,6 +39,7 @@ public class FileSink implements Sink {
 
   @Override
   public void close() throws IOException {
+    log.info("FileSink close");
     writer.close();
   }
 }

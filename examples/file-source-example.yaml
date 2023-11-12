@@ -1,4 +1,6 @@
+name: file-source
 type: source
 class: com.zikeyang.contube.example.file.FileSource
+sinkTubeName: file-sink
 config:
   path: 'examples/source.txt'

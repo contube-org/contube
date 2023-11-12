@@ -6,28 +6,51 @@ import com.zikeyang.contube.api.Con;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Runtime {
   public static void main(String[] args) {
     if (args.length < 1 || Arrays.asList(args).contains("--help")) {
-      log.info("runtime [tube1.yaml tube2.yaml ...]");
+      log.info("runtime contube.yaml [tube1.yaml tube2.yaml ...]");
       System.exit(1);
     }
 
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    List<Thread> tubes = new ArrayList<>();
-    MemoryCon memoryCon = new MemoryCon();
+    Map<String, Class<? extends Tube>> tubeTypeMap = new HashMap<>();
+    Con con = null;
 
-    for (String arg : args) {
+    try {
+      ConTubeConfig conTubeConfig = mapper.readValue(new File(args[0]), ConTubeConfig.class);
+      log.info("Starting runtime with config: {}",
+          mapper.writer().writeValueAsString(conTubeConfig));
+      for (ConTubeConfig.TubeType tubeType : conTubeConfig.getTubeType()) {
+        Class<?> clazz = Class.forName(tubeType.getTubeClass());
+        if (!Tube.class.isAssignableFrom(clazz)) {
+          log.error("{} is not a valid tube type", tubeType.getName());
+          System.exit(1);
+        }
+        tubeTypeMap.put(tubeType.getName(), clazz.asSubclass(Tube.class));
+      }
+      con = Class.forName(conTubeConfig.getConType()).asSubclass(Con.class)
+          .getDeclaredConstructor().newInstance();
+    } catch (Exception e) {
+      log.error("Starting runtime failed", e);
+      System.exit(1);
+    }
+
+    List<Thread> tubes = new ArrayList<>();
+
+    for (String arg : Arrays.asList(args).subList(1, args.length)) {
       try {
         TubeConfig config = mapper.readValue(new File(arg), TubeConfig.class);
-        log.info("Starting tube with config: {}", config);
-        Tube tube = config.getType().getTubeClass()
+        log.info("Starting tube with config: {}", mapper.writer().writeValueAsString(config));
+        Tube tube = tubeTypeMap.get(config.getType())
             .getDeclaredConstructor(TubeConfig.class, Con.class)
-            .newInstance(config, memoryCon);
+            .newInstance(config, con);
         Thread thread = new Thread(tube);
         tubes.add(thread);
         thread.start();

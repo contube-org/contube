@@ -1,3 +1,4 @@
+name: file-sink
 type: sink
 class: com.zikeyang.contube.example.file.FileSink
 config:

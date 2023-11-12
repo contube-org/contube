@@ -12,8 +12,6 @@ repositories {
     mavenCentral()
 }
 
-
-
 subprojects {
     apply(plugin = "java-library")
     apply(plugin = "checkstyle")
@@ -54,6 +52,10 @@ project(":common") {
 }
 
 project(":runtime") {
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
     dependencies {
         implementation(project(":api"))
         implementation(project(":common"))

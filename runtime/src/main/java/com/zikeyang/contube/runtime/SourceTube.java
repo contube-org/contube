@@ -9,10 +9,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SourceTube extends Tube {
+  final String sinkTubeName;
   Source source;
 
   public SourceTube(TubeConfig config, Con con) {
     super(config, con);
+    sinkTubeName = config.getSinkTubeName();
+    if (sinkTubeName == null) {
+      throw new IllegalArgumentException("Sink tube name is null");
+    }
   }
 
   void init() throws Exception {
@@ -23,7 +28,7 @@ public class SourceTube extends Tube {
   @SneakyThrows
   void runTube() {
     TubeRecord record = source.read();
-    con.send(config.getSinkTubeName(), record);
+    con.send(sinkTubeName, record);
     if (record instanceof TombstoneRecord) {
       log.trace("Got tombstone record");
       if (!closed.compareAndSet(false, true)) {
