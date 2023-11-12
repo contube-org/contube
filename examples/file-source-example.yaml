@@ -1,0 +1,4 @@
+type: source
+class: com.zikeyang.contube.example.file.FileSource
+config:
+  path: 'examples/source.txt'

@@ -1,0 +1,4 @@
+type: sink
+class: com.zikeyang.contube.example.file.FileSink
+config:
+  path: 'examples/sink.txt'
