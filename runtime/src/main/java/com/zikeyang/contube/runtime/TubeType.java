@@ -1,5 +1,6 @@
 package com.zikeyang.contube.runtime;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -13,7 +14,7 @@ public enum TubeType {
     this.value = value;
   }
 
-  @com.fasterxml.jackson.annotation.JsonCreator
+  @JsonCreator
   public static TubeType forValue(String value) {
     for (TubeType type : TubeType.values()) {
       if (type.value.equals(value)) {

@@ -16,14 +16,14 @@ public class MemoryCon implements Con {
 
   @Override
   public void send(String tubeName, TubeRecord record) {
-    if (!tubeName.contains(tubeName)) {
+    if (!tubeMap.containsKey(tubeName)) {
       throw new RuntimeException("tube not found");
     }
     tubeMap.get(tubeName).write(record);
   }
 
   @Override
-  public void close() throws Exception {
+  public void close() {
     log.info("Close MemoryCon");
   }
 }

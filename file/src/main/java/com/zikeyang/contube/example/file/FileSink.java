@@ -22,7 +22,6 @@ public class FileSink implements Sink {
     log.info("FileSink open");
     this.config = Utils.loadConfig(config, FileTubeConfig.class);
     this.context = context;
-    File file = new File(this.config.getPath());
     try {
       writer = new FileOutputStream(this.config.getPath());
     } catch (IOException e) {
