@@ -1,5 +1,6 @@
 package com.zikeyang.contube.runtime;
 
+import com.zikeyang.contube.api.Con;
 import com.zikeyang.contube.api.Sink;
 import com.zikeyang.contube.api.TombstoneRecord;
 import com.zikeyang.contube.api.TubeRecord;
@@ -13,11 +14,11 @@ public class SinkTube extends Tube {
   Sink sink;
   ContextImpl context;
 
-  public SinkTube(TubeConfig config) {
-    super(config);
+  public SinkTube(TubeConfig config, Con con) {
+    super(config, con);
   }
 
-  public void write(TubeRecord record) {
+  void write(TubeRecord record) {
     try {
       recordQueue.put(record);
     } catch (InterruptedException e) {
@@ -30,6 +31,7 @@ public class SinkTube extends Tube {
     sink = createTube(config.getClazz(), Sink.class);
     context = createContext();
     sink.open(config.getConfig(), context);
+    con.register(config.getName(), this::write);
   }
 
   @SneakyThrows

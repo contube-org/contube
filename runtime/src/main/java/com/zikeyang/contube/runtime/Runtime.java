@@ -2,6 +2,7 @@ package com.zikeyang.contube.runtime;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.zikeyang.contube.api.Con;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Runtime {
-
   public static void main(String[] args) {
     if (args.length < 1 || Arrays.asList(args).contains("--help")) {
       log.info("runtime [tube1.yaml tube2.yaml ...]");
@@ -25,22 +25,12 @@ public class Runtime {
       try {
         TubeConfig config = mapper.readValue(new File(arg), TubeConfig.class);
         log.info("Starting tube with config: {}", config);
-        switch (config.getType()) {
-          case SOURCE -> {
-            SourceTube sourceTube = new SourceTube(config, memoryCon);
-            Thread thread = new Thread(sourceTube);
-            tubes.add(thread);
-            thread.start();
-          }
-          case SINK -> {
-            SinkTube sinkTube = new SinkTube(config);
-            memoryCon.addSinkTube(config.getName(), sinkTube);
-            Thread thread = new Thread(sinkTube);
-            tubes.add(thread);
-            thread.start();
-          }
-        }
-
+        Tube tube = config.getType().getTubeClass()
+            .getDeclaredConstructor(TubeConfig.class, Con.class)
+            .newInstance(config, memoryCon);
+        Thread thread = new Thread(tube);
+        tubes.add(thread);
+        thread.start();
       } catch (Exception e) {
         log.error("Staring tube failed", e);
         System.exit(1);

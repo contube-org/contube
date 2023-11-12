@@ -31,6 +31,7 @@ subprojects {
         constraints {
             implementation("com.fasterxml.jackson.core:jackson-databind:2.12.3")
             implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.3")
+            implementation("com.github.rholder:guava-retrying:2.0.0")
         }
         implementation("org.slf4j:slf4j-api:2.0.9")
         implementation("org.slf4j:slf4j-simple:2.0.9")
@@ -56,6 +57,8 @@ project(":runtime") {
     dependencies {
         implementation(project(":api"))
         implementation(project(":common"))
+
+        implementation("com.github.rholder:guava-retrying")
 
         runtimeOnly(project(":file"))
     }

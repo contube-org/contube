@@ -9,12 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SourceTube extends Tube {
-  final Con con;
   Source source;
 
   public SourceTube(TubeConfig config, Con con) {
-    super(config);
-    this.con = con;
+    super(config, con);
   }
 
   void init() throws Exception {

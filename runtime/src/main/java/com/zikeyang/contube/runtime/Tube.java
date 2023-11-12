@@ -1,5 +1,6 @@
 package com.zikeyang.contube.runtime;
 
+import com.zikeyang.contube.api.Con;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
@@ -7,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class Tube implements Runnable, AutoCloseable {
   final TubeConfig config;
+  final Con con;
   final AtomicBoolean closed = new AtomicBoolean(false);
   volatile Throwable deathException = null;
 
-  public Tube(TubeConfig config) {
+  public Tube(TubeConfig config, Con con) {
     this.config = config;
+    this.con = con;
   }
 
   <T> T createTube(String className, Class<T> tubeType)
