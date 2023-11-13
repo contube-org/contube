@@ -2,4 +2,4 @@ name: file-sink
 type: sink
 class: com.zikeyang.contube.example.file.FileSink
 config:
-  path: 'examples/sink.txt'
+  path: 'examples/test-result-sink.txt'
