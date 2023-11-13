@@ -64,6 +64,13 @@ project(":runtime") {
 
         runtimeOnly(project(":file"))
     }
+    tasks.register<Copy>("copyDependencies") {
+        from(configurations.runtimeClasspath)
+        into("${project.rootDir}/lib")
+    }
+    tasks.named("jar") {
+        dependsOn("copyDependencies")
+    }
 }
 
 project(":file") {
