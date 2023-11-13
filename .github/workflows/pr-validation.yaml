@@ -39,4 +39,4 @@ jobs:
 
       - name: Tests
         run: |
-          bin/run-tests.sh
+          ./run-tests.sh
