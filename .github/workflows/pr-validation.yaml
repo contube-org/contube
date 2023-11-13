@@ -1,4 +1,4 @@
-name: Gradle Build and Checkstyle
+name: PR validation
 
 on:
   push:
