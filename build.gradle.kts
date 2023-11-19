@@ -1,12 +1,10 @@
 plugins {
     id("java-library")
     id("io.freefair.lombok") version "8.4"
+    `maven-publish`
     checkstyle
 
 }
-
-group = "com.zikeyang.contube"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -15,9 +13,12 @@ repositories {
 subprojects {
     apply(plugin = "java-library")
     apply(plugin = "checkstyle")
+    apply(plugin = "maven-publish")
     repositories {
         mavenCentral()
     }
+    group = "com.zikeyang.contube"
+    version = "1.0-SNAPSHOT"
 
     checkstyle {
         toolVersion = "10.12.4"
@@ -27,8 +28,8 @@ subprojects {
 
     dependencies {
         constraints {
-            implementation("com.fasterxml.jackson.core:jackson-databind:2.12.3")
-            implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.3")
+            implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
+            implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2")
             implementation("com.github.rholder:guava-retrying:2.0.0")
         }
         implementation("org.slf4j:slf4j-api:2.0.9")
@@ -36,6 +37,16 @@ subprojects {
 
         compileOnly("org.projectlombok:lombok:1.18.24")
         annotationProcessor("org.projectlombok:lombok:1.18.24")
+    }
+
+    publishing {
+        publications {
+            create<MavenPublication>("ConTube") {
+                from(components["java"])
+                artifactId = "contube-" + project.name
+                version = project.version.toString()
+            }
+        }
     }
 }
 
