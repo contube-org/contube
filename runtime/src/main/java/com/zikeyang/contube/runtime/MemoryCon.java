@@ -10,6 +10,7 @@ import com.zikeyang.contube.api.TubeRecord;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemoryCon implements Con {
   final Retryer<Void> retryer = RetryerBuilder.<Void>newBuilder()
       .retryIfExceptionOfType(ConRetriableException.class)
-      .withWaitStrategy(WaitStrategies.fibonacciWait())
+      .withWaitStrategy(WaitStrategies.fixedWait(3, TimeUnit.SECONDS))
       .withStopStrategy(StopStrategies.stopAfterAttempt(10))
       .build();
 
