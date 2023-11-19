@@ -37,7 +37,7 @@ public class FileSource implements Source {
       log.info("Read finished");
       return TubeRecord.TOMBSTONE_RECORD;
     }
-    return StringRecord.builder().value(scanner.nextLine() + System.lineSeparator()).build();
+    return StringRecord.builder().value(scanner.nextLine()).build();
   }
 
   @Override

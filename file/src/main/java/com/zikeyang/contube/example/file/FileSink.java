@@ -32,6 +32,7 @@ public class FileSink implements Sink {
   public void write(TubeRecord record) {
     try {
       writer.write(record.getValue());
+      writer.write(System.lineSeparator().getBytes());
     } catch (IOException e) {
       context.fail(e);
     }
