@@ -35,6 +35,7 @@ public abstract class Tube implements Runnable, AutoCloseable {
   ContextImpl createContext() {
     Thread currentThread = Thread.currentThread();
     return new ContextImpl(
+        config,
         () -> {
           if (!closed.compareAndSet(false, true)) {
             deathException = new IllegalStateException("Tube already closed");
