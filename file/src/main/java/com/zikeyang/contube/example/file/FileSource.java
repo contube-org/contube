@@ -9,9 +9,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.Scanner;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
-@Slf4j
+@Log4j2
 public class FileSource implements Source {
   FileTubeConfig config;
   Scanner scanner;

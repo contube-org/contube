@@ -3,9 +3,9 @@ package com.zikeyang.contube.runtime;
 import com.zikeyang.contube.api.Con;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
-@Slf4j
+@Log4j2
 public abstract class Tube implements Runnable, AutoCloseable {
   final TubeConfig config;
   final Con con;

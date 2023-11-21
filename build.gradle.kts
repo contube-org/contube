@@ -31,9 +31,10 @@ subprojects {
             implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
             implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2")
             implementation("com.github.rholder:guava-retrying:2.0.0")
+            implementation("org.apache.logging.log4j:log4j-api:2.14.1")
+            implementation("org.apache.logging.log4j:log4j-core:2.14.1")
         }
-        implementation("org.slf4j:slf4j-api:2.0.9")
-        implementation("org.slf4j:slf4j-simple:2.0.9")
+        api("org.apache.logging.log4j:log4j-api")
 
         compileOnly("org.projectlombok:lombok:1.18.24")
         annotationProcessor("org.projectlombok:lombok:1.18.24")
@@ -72,6 +73,7 @@ project(":runtime") {
         implementation(project(":common"))
 
         implementation("com.github.rholder:guava-retrying")
+        runtimeOnly("org.apache.logging.log4j:log4j-core")
 
         runtimeOnly(project(":file"))
     }

@@ -13,9 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
-@Slf4j
+@Log4j2
 public class MemoryCon implements Con {
   final Retryer<Void> retryer = RetryerBuilder.<Void>newBuilder()
       .retryIfExceptionOfType(ConRetriableException.class)
@@ -49,6 +49,7 @@ public class MemoryCon implements Con {
       throw new IllegalStateException(String.format("Tube %s already registered", tubeName));
     }
     tubeMap.put(tubeName, recordConsumer);
+    log.info("Register tube {} to memory con", tubeName);
   }
 
   @Override

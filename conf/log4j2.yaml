@@ -1,0 +1,30 @@
+Configuration:
+  status: INFO
+  monitorInterval: 30
+  name: contube
+  packages: io.prometheus.client.log4j2
+
+  Appenders:
+
+    # Console
+    Console:
+      name: Console
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: "%d{ISO8601_OFFSET_DATE_TIME_HHMM} [%t] %-5level %logger{36} - %msg%n"
+
+  Loggers:
+
+    # Default root logger configuration
+    Root:
+      level: info
+      additivity: true
+      AppenderRef:
+        - ref: Console
+
+    Logger:
+      - name: com.zikeyang.contube
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: Console
