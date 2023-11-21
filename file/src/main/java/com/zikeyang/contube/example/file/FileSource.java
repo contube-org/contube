@@ -37,7 +37,9 @@ public class FileSource implements Source {
       log.info("Read finished");
       return TubeRecord.TOMBSTONE_RECORD;
     }
-    return StringRecord.builder().value(scanner.nextLine()).build();
+    StringRecord record = StringRecord.builder().stringValue(scanner.nextLine()).build();
+    record.waitForCommit().thenRun(() -> log.info("Record committed: {}", record.getStringValue()));
+    return record;
   }
 
   @Override

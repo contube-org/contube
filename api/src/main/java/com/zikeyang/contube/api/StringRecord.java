@@ -1,13 +1,15 @@
 package com.zikeyang.contube.api;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
 public class StringRecord implements TubeRecord {
-  String value;
+  @Getter
+  String stringValue;
 
   @Override
   public byte[] getValue() {
-    return value.getBytes();
+    return stringValue.getBytes();
   }
 }

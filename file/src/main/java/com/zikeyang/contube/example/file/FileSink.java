@@ -33,6 +33,7 @@ public class FileSink implements Sink {
     try {
       writer.write(record.getValue());
       writer.write(System.lineSeparator().getBytes());
+      record.commit();
     } catch (IOException e) {
       context.fail(e);
     }
