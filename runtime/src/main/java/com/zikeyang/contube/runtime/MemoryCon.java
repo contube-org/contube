@@ -9,7 +9,10 @@ import com.zikeyang.contube.api.ConRetriableException;
 import com.zikeyang.contube.api.TubeRecord;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import lombok.SneakyThrows;
@@ -23,16 +26,27 @@ public class MemoryCon implements Con {
       .withStopStrategy(StopStrategies.stopAfterAttempt(10))
       .build();
 
+  ExecutorService executorService = Executors.newSingleThreadExecutor();
+
   Map<String, Consumer<TubeRecord>> tubeMap = new ConcurrentHashMap<>();
 
   @SneakyThrows
   @Override
-  public void send(String tubeName, TubeRecord record) {
-    Callable<Void> sendTask = () -> {
-      internalSend(tubeName, record);
-      return null;
-    };
-    retryer.call(sendTask);
+  public CompletableFuture<Void> send(String tubeName, TubeRecord record) {
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    executorService.submit(() -> {
+      Callable<Void> sendTask = () -> {
+        internalSend(tubeName, record);
+        return null;
+      };
+      try {
+        retryer.call(sendTask);
+        record.waitForCommit().thenRun(() -> future.complete(null));
+      } catch (Exception e) {
+        future.completeExceptionally(e);
+      }
+    });
+    return future;
   }
 
   void internalSend(String tubeName, TubeRecord record) throws ConRetriableException {
@@ -55,5 +69,6 @@ public class MemoryCon implements Con {
   @Override
   public void close() {
     log.info("Close MemoryCon");
+    executorService.shutdown();
   }
 }

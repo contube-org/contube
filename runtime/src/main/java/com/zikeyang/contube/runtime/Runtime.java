@@ -52,6 +52,7 @@ public class Runtime {
             .getDeclaredConstructor(TubeConfig.class, Con.class)
             .newInstance(config, con);
         Thread thread = new Thread(tube);
+        thread.setName(String.format("tube-%s-%s", config.getType(), config.getName()));
         tubes.add(thread);
         thread.start();
       } catch (Exception e) {
@@ -62,10 +63,17 @@ public class Runtime {
     for (Thread tube : tubes) {
       try {
         tube.join();
+        log.info("Closed tube thread: {}", tube.getName());
       } catch (InterruptedException e) {
         log.error("Waiting for tube to stop failed", e);
         System.exit(1);
       }
+    }
+    try {
+      con.close();
+    } catch (Exception e) {
+      log.error("Closing con failed", e);
+      System.exit(1);
     }
   }
 }

@@ -28,7 +28,10 @@ public class SourceTube extends Tube {
   @SneakyThrows
   void runTube() {
     TubeRecord record = source.read();
-    con.send(sinkTubeName, record);
+    con.send(sinkTubeName, record).exceptionally(e -> {
+      log.error("Send record failed", e);
+      return null;
+    });
     if (record instanceof TombstoneRecord) {
       log.trace("Got tombstone record");
       if (!closed.compareAndSet(false, true)) {
