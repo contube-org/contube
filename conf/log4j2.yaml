@@ -15,7 +15,6 @@ Configuration:
 
   Loggers:
 
-    # Default root logger configuration
     Root:
       level: info
       additivity: true
