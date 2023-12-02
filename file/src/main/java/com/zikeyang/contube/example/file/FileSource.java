@@ -2,11 +2,13 @@ package com.zikeyang.contube.example.file;
 
 import com.zikeyang.contube.api.Context;
 import com.zikeyang.contube.api.Source;
-import com.zikeyang.contube.api.StringRecord;
 import com.zikeyang.contube.api.TubeRecord;
+import com.zikeyang.contube.common.RawRecord;
+import com.zikeyang.contube.common.TombstoneRecord;
 import com.zikeyang.contube.common.Utils;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Scanner;
 import lombok.extern.log4j.Log4j2;
@@ -35,10 +37,11 @@ public class FileSource implements Source {
   public TubeRecord read() {
     if (!scanner.hasNextLine()) {
       log.info("Read finished");
-      return TubeRecord.TOMBSTONE_RECORD;
+      return TombstoneRecord.instance;
     }
-    StringRecord record = StringRecord.builder().stringValue(scanner.nextLine()).build();
-    record.waitForCommit().thenRun(() -> log.info("Record committed: {}", record.getStringValue()));
+    String content = scanner.nextLine();
+    RawRecord record = RawRecord.builder().value(content.getBytes(StandardCharsets.UTF_8)).build();
+    record.waitForCommit().thenRun(() -> log.info("Record committed: {}", content));
     return record;
   }
 

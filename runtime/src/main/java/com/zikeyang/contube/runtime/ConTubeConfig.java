@@ -2,6 +2,7 @@ package com.zikeyang.contube.runtime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -11,6 +12,7 @@ public class ConTubeConfig {
   private String conType;
 
   @Getter
+  @Builder
   public static class TubeType {
     @JsonProperty(required = true)
     private String name;

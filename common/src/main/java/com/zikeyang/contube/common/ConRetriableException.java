@@ -1,4 +1,4 @@
-package com.zikeyang.contube.api;
+package com.zikeyang.contube.common;
 
 public class ConRetriableException extends Exception {
   public ConRetriableException(Throwable t) {

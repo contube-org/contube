@@ -27,7 +27,15 @@ public class Runtime {
       ConTubeConfig conTubeConfig = mapper.readValue(new File(args[0]), ConTubeConfig.class);
       log.info("Starting runtime with config: {}",
           mapper.writer().writeValueAsString(conTubeConfig));
-      for (ConTubeConfig.TubeType tubeType : conTubeConfig.getTubeType()) {
+      List<ConTubeConfig.TubeType> tubeTypes = conTubeConfig.getTubeType();
+      if (tubeTypes == null) {
+        tubeTypes = Arrays.asList(
+            ConTubeConfig.TubeType.builder().name("sink").tubeClass(SinkTube.class.getName())
+                .build(),
+            ConTubeConfig.TubeType.builder().name("source").tubeClass(SourceTube.class.getName())
+                .build());
+      }
+      for (ConTubeConfig.TubeType tubeType : tubeTypes) {
         Class<?> clazz = Class.forName(tubeType.getTubeClass());
         if (!Tube.class.isAssignableFrom(clazz)) {
           log.error("{} is not a valid tube type", tubeType.getName());

@@ -2,7 +2,7 @@ package com.zikeyang.contube.runtime;
 
 import com.zikeyang.contube.api.Con;
 import com.zikeyang.contube.api.Source;
-import com.zikeyang.contube.api.TombstoneRecord;
+import com.zikeyang.contube.common.TombstoneRecord;
 import com.zikeyang.contube.api.TubeRecord;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;

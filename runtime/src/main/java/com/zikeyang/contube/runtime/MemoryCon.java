@@ -5,7 +5,7 @@ import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
 import com.zikeyang.contube.api.Con;
-import com.zikeyang.contube.api.ConRetriableException;
+import com.zikeyang.contube.common.ConRetriableException;
 import com.zikeyang.contube.api.TubeRecord;
 import java.util.Map;
 import java.util.concurrent.Callable;
