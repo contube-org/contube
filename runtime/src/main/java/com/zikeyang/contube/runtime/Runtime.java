@@ -6,6 +6,7 @@ import com.zikeyang.contube.api.Con;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class Runtime {
       ConTubeConfig conTubeConfig = mapper.readValue(new File(args[0]), ConTubeConfig.class);
       log.info("Starting runtime with config: {}",
           mapper.writer().writeValueAsString(conTubeConfig));
-      List<ConTubeConfig.TubeType> tubeTypes = conTubeConfig.getTubeType();
+      Collection<ConTubeConfig.TubeType> tubeTypes = conTubeConfig.getTubeType();
       if (tubeTypes == null) {
         tubeTypes = Arrays.asList(
             ConTubeConfig.TubeType.builder().name("sink").tubeClass(SinkTube.class.getName())

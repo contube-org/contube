@@ -5,8 +5,9 @@ import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
 import com.zikeyang.contube.api.Con;
-import com.zikeyang.contube.common.ConRetriableException;
 import com.zikeyang.contube.api.TubeRecord;
+import com.zikeyang.contube.common.ConRetriableException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -28,20 +29,22 @@ public class MemoryCon implements Con {
 
   ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-  Map<String, Consumer<TubeRecord>> tubeMap = new ConcurrentHashMap<>();
+  Map<String, Consumer<Collection<TubeRecord>>> tubeMap = new ConcurrentHashMap<>();
 
   @SneakyThrows
   @Override
-  public CompletableFuture<Void> send(String tubeName, TubeRecord record) {
+  public CompletableFuture<Void> send(String tubeName, Collection<TubeRecord> records) {
     CompletableFuture<Void> future = new CompletableFuture<>();
     executorService.submit(() -> {
       Callable<Void> sendTask = () -> {
-        internalSend(tubeName, record);
+        internalSend(tubeName, records);
         return null;
       };
       try {
         retryer.call(sendTask);
-        record.waitForCommit().thenRun(() -> future.complete(null));
+        CompletableFuture.allOf(
+                records.stream().map(TubeRecord::waitForCommit).toArray(CompletableFuture[]::new))
+            .thenRun(() -> future.complete(null));
       } catch (Exception e) {
         future.completeExceptionally(e);
       }
@@ -49,16 +52,16 @@ public class MemoryCon implements Con {
     return future;
   }
 
-  void internalSend(String tubeName, TubeRecord record) throws ConRetriableException {
+  void internalSend(String tubeName, Collection<TubeRecord> records) throws ConRetriableException {
     if (!tubeMap.containsKey(tubeName)) {
       throw new ConRetriableException(new Exception(String.format("Tube %s not found", tubeName)));
     }
-    Consumer<TubeRecord> recordConsumer = tubeMap.get(tubeName);
-    recordConsumer.accept(record);
+    Consumer<Collection<TubeRecord>> recordConsumer = tubeMap.get(tubeName);
+    recordConsumer.accept(records);
   }
 
   @Override
-  public void register(String tubeName, Consumer<TubeRecord> recordConsumer) {
+  public void register(String tubeName, Consumer<Collection<TubeRecord>> recordConsumer) {
     if (tubeMap.containsKey(tubeName)) {
       throw new IllegalStateException(String.format("Tube %s already registered", tubeName));
     }

@@ -9,6 +9,8 @@ import com.zikeyang.contube.common.Utils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Scanner;
 import lombok.extern.log4j.Log4j2;
@@ -34,15 +36,15 @@ public class FileSource implements Source {
   }
 
   @Override
-  public TubeRecord read() {
+  public Collection<TubeRecord> read() {
     if (!scanner.hasNextLine()) {
       log.info("Read finished");
-      return TombstoneRecord.instance;
+      return Collections.singleton(TombstoneRecord.instance);
     }
     String content = scanner.nextLine();
     RawRecord record = RawRecord.builder().value(content.getBytes(StandardCharsets.UTF_8)).build();
     record.waitForCommit().thenRun(() -> log.info("Record committed: {}", content));
-    return record;
+    return Collections.singleton(record);
   }
 
   @Override

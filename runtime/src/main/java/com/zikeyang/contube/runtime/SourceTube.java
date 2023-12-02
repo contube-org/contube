@@ -2,8 +2,9 @@ package com.zikeyang.contube.runtime;
 
 import com.zikeyang.contube.api.Con;
 import com.zikeyang.contube.api.Source;
-import com.zikeyang.contube.common.TombstoneRecord;
 import com.zikeyang.contube.api.TubeRecord;
+import com.zikeyang.contube.common.TombstoneRecord;
+import java.util.Collection;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,26 +21,24 @@ public class SourceTube extends Tube {
     }
   }
 
+  @Override
   void init() throws Exception {
+    super.init();
     source = createTube(config.getClazz(), Source.class);
     source.open(config.getConfig(), createContext());
   }
 
   @SneakyThrows
   void runTube() {
-    TubeRecord record = source.read();
-    con.send(sinkTubeName, record).exceptionally(e -> {
+    Collection<TubeRecord> records = source.read();
+    con.send(sinkTubeName, records).exceptionally(e -> {
       log.error("Send record failed", e);
       return null;
     });
-    if (record instanceof TombstoneRecord) {
+    records.stream().filter(r -> r instanceof TombstoneRecord).findFirst().ifPresent(r -> {
       log.trace("Got tombstone record");
-      if (!closed.compareAndSet(false, true)) {
-        deathException = new IllegalStateException("Tube already closed");
-        return;
-      }
-      throw new InterruptedException();
-    }
+      context.stop();
+    });
   }
 
   @Override

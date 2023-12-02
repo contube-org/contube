@@ -11,6 +11,7 @@ public abstract class Tube implements Runnable, AutoCloseable {
   final Con con;
   final AtomicBoolean closed = new AtomicBoolean(false);
   volatile Throwable deathException = null;
+  ContextImpl context;
 
   public Tube(TubeConfig config, Con con) {
     this.config = config;
@@ -28,7 +29,10 @@ public abstract class Tube implements Runnable, AutoCloseable {
     return tubeType.cast(clazz.getConstructor().newInstance());
   }
 
-  abstract void init() throws Exception;
+  void init() throws Exception {
+    log.info("Initializing tube {}", config.getName());
+    context = createContext();
+  }
 
   abstract void runTube();
 
@@ -38,8 +42,7 @@ public abstract class Tube implements Runnable, AutoCloseable {
         config,
         () -> {
           if (!closed.compareAndSet(false, true)) {
-            deathException = new IllegalStateException("Tube already closed");
-            return;
+            log.warn("Tube {} already closed", config.getName());
           }
           currentThread.interrupt();
         },
@@ -54,7 +57,7 @@ public abstract class Tube implements Runnable, AutoCloseable {
   public void run() {
     try {
       init();
-      while (true) {
+      while (!closed.get()) {
         runTube();
       }
     } catch (Throwable t) {

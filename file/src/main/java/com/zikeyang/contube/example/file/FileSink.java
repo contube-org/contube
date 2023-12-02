@@ -7,6 +7,7 @@ import com.zikeyang.contube.common.Utils;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 
@@ -29,11 +30,14 @@ public class FileSink implements Sink {
   }
 
   @Override
-  public void write(TubeRecord record) {
+  public void write(Collection<TubeRecord> records) {
     try {
-      writer.write(record.getValue());
-      writer.write(System.lineSeparator().getBytes());
-      record.commit();
+      for (TubeRecord record : records) {
+        writer.write(record.getValue());
+        writer.write(System.lineSeparator().getBytes());
+      }
+      writer.flush();
+      records.forEach(TubeRecord::commit);
     } catch (IOException e) {
       context.fail(e);
     }

@@ -2,25 +2,25 @@ package com.zikeyang.contube.runtime;
 
 import com.zikeyang.contube.api.Con;
 import com.zikeyang.contube.api.Sink;
-import com.zikeyang.contube.common.TombstoneRecord;
 import com.zikeyang.contube.api.TubeRecord;
+import com.zikeyang.contube.common.TombstoneRecord;
+import java.util.Collection;
 import java.util.concurrent.LinkedBlockingQueue;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class SinkTube extends Tube {
-  final LinkedBlockingQueue<TubeRecord> recordQueue = new LinkedBlockingQueue<>();
+  final LinkedBlockingQueue<Collection<TubeRecord>> recordQueue = new LinkedBlockingQueue<>();
   Sink sink;
-  ContextImpl context;
 
   public SinkTube(TubeConfig config, Con con) {
     super(config, con);
   }
 
-  void write(TubeRecord record) {
+  void write(Collection<TubeRecord> records) {
     try {
-      recordQueue.put(record);
+      recordQueue.put(records);
     } catch (InterruptedException e) {
       context.fail(e);
     }
@@ -28,8 +28,8 @@ public class SinkTube extends Tube {
 
   @Override
   void init() throws Exception {
+    super.init();
     sink = createTube(config.getClazz(), Sink.class);
-    context = createContext();
     sink.open(config.getConfig(), context);
     con.register(config.getName(), this::write);
   }
@@ -37,12 +37,16 @@ public class SinkTube extends Tube {
   @SneakyThrows
   @Override
   void runTube() {
-    TubeRecord record = recordQueue.take();
-    if (record instanceof TombstoneRecord) {
-      context.stop();
-      return;
+    Collection<TubeRecord> records = recordQueue.take();
+    Collection<TubeRecord> sinkRecords =
+        records.stream().filter(r -> !(r instanceof TombstoneRecord)).toList();
+    if (!sinkRecords.isEmpty()) {
+      sink.write(sinkRecords);
     }
-    sink.write(record);
+    if (records.size() != sinkRecords.size()) {
+      log.trace("Got tombstone record");
+      context.stop();
+    }
   }
 
   @Override
