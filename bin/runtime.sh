@@ -1,7 +1,11 @@
+#!/bin/bash
+set -e
+
 base_dir=$(dirname $0)
 
-cd $base_dir/../ || exit 1
+pushd $base_dir/..
+log4jYaml=$(realpath conf/log4j2.yaml)
+CLASSPATH=$(find . -type f \( -name '*.jar' -o -path "*/build/libs/*.jar" \) -exec readlink -f {} \; | tr '\n' ':')
+popd
 
-CLASSPATH=$(find . lib -type f \( -name '*.jar' -o -path "*/build/libs/*.jar" \) | tr '\n' ':')
-
-java -cp $CLASSPATH -Dlog4j.configurationFile=conf/log4j2.yaml com.zikeyang.contube.runtime.Runtime "$@"
+java $JAVA_OPTS -cp $CLASSPATH -Dlog4j.configurationFile=$log4jYaml com.zikeyang.contube.runtime.Runtime "$@"
