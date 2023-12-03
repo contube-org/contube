@@ -10,6 +10,12 @@ repositories {
     mavenCentral()
 }
 
+allprojects {
+    buildDir = File("${rootProject.buildDir}/${name}")
+    group = "com.zikeyang.contube"
+    version = "1.0-SNAPSHOT"
+}
+
 subprojects {
     apply(plugin = "java-library")
     apply(plugin = "checkstyle")
@@ -17,8 +23,6 @@ subprojects {
     repositories {
         mavenCentral()
     }
-    group = "com.zikeyang.contube"
-    version = "1.0-SNAPSHOT"
 
     checkstyle {
         toolVersion = "10.12.4"
@@ -79,7 +83,7 @@ project(":runtime") {
     }
     tasks.register<Copy>("copyDependencies") {
         from(configurations.runtimeClasspath)
-        into("${project.rootDir}/lib")
+        into("${project.rootDir}/libs")
     }
     tasks.named("jar") {
         dependsOn("copyDependencies")
