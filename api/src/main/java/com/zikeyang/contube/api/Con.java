@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
- * The Con interface provides a conduit for connecting and exchanging data between tubes.
+ * The Con interface provides a connection for connecting and exchanging data between tubes.
  * It enables a tube to dispatch records to other tubes and also to register a consumer to process incoming records.
  */
 public interface Con extends AutoCloseable {

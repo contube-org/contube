@@ -32,6 +32,7 @@ public abstract class Tube implements Runnable, AutoCloseable {
   void init() throws Exception {
     log.info("Initializing tube {}", config.getName());
     context = createContext();
+    log.info("Initialized tube {}", config.getName());
   }
 
   abstract void runTube();

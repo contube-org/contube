@@ -5,8 +5,8 @@ ConTube is a scalable data connector framework that facilitates efficient data t
 ## Motivation
 
 The challenge of efficiently moving data from one system to another has long been a significant issue in data
-engineering. ConTube seeks to address this by offering a generic data format and a connector framework capable of
-representing and handling data from virtually any system.
+engineering. ConTube seeks to address this by offering a generic data connector framework capable of handling data from
+diverse system.
 
 ## How it Works
 
@@ -15,16 +15,18 @@ handle data formatting, and write data into other systems. This framework enable
 Connectors and Kafka Connectors, thereby leveraging the rich data connection ecosystem of Pulsar and Kafka. This
 facilitates data migration capabilities between a variety of different systems.
 
-ConTube operates through two main components: `Con` and `Tube`. A `Con` serves as a conduit for connecting and moving
-data between tubes. A `Tube` is a data processing unit that can be connected to other tubes to form a data processing
-pipeline. A `Tube` can be either a `Source` or a `Sink`. A `Source` tube reads data from an upstream system and provides
-it for further processing. A `Sink` tube receives data from other tubes and writes it to a downstream system.
+ConTube operates through two main components: `Con` and `Tube`. A `Con` serves as a connection for connecting and moving
+data between tubes. A `Tube` is a data processing unit that can be connected to other data systems and other tubes to
+form a data processing pipeline. A `Tube` can be either a `Source` or a `Sink`. A `Source` tube reads data from an
+upstream system and provides it for further processing. A `Sink` tube receives data from other tubes and writes it to a
+downstream system.
 
 This repository defines the core interfaces for `ConTube`. Here's a high-level overview of how these interfaces work
 together:
 
-1. `Con Interface`: The Con interface serves as a conduit for connecting and exchanging data between tubes. It provides
-   the send method for dispatching records to other tubes and the register method for processing incoming records.
+1. `Con Interface`: The Con interface serves as a connection for connecting and exchanging data between tubes. It
+   provides the send method for dispatching records to other tubes and the register method for processing incoming
+   records.
 2. `Source Tube Interface`: The Source interface is implemented by a source tube, which reads records from an upstream
    system and provides them for further processing.
 3. `Sink Tube Interface`: The Sink interface is implemented by a sink tube, which receives records from other tubes and
@@ -39,17 +41,21 @@ together:
 - **Universal Data Format**: ConTube offers a universal data format capable of representing data from virtually any
   system. This allows us to implement Runtimes for Pulsar Connectors and Kafka Connectors, thereby accessing the rich
   data connection ecosystem of Pulsar and Kafka. This feature is still under development.
-- **Data Sourcing and Sinking**: ConTube provides a set of interfaces for data sourcing and sinking. This allows us to
-  implement Runtimes for Pulsar Connectors and Kafka Connectors, thereby accessing the rich data connection ecosystem of
-  Pulsar and Kafka.
+- **Data Sourcing and Sinking**: ConTube provides a set of interfaces for data sourcing and sinking. **This allows us to
+  implement Runtimes for Pulsar Connectors and Kafka Connectors**, thereby accessing the rich data connection ecosystem
+  of Pulsar and Kafka. Support for other MQ ecosystems is on the way.
+- **Lightweight Runtime**: In contrast to the Kafka and Pulsar Connect Frameworks, Contube allows for running multiple
+  tubes within a single JVM process or a single Docker container, eliminating the need for running separate MQ clusters.
 - **Expanded Data Transfer Options**: The current implementation of `Con` is MemoryCon, implying that data is
   transferred in memory. We aim to add more `Con` implementations, such as GrpcCon, which transfers data using gRPC, and
-  MQTTCon, which transfers data using various message queue protocols.
-- **Data Consistency Guarantee**: A future feature, we aim to introduce a data consistency guarantee mechanism to ensure
-  that data is transferred between systems in an `exactly once`, `at least once`, or `at most once` manner.
-- **Data Encryption**: Another planned feature, we aim to add a data encryption mechanism to ensure secure data transfer
-  between systems.
+  MQCon, which transfers data using various message queue protocols.
+- **Data Consistency Guarantee**: A work in progress feature, we aim to introduce a data consistency guarantee mechanism
+  to ensure that data is transferred between systems in an `exactly once`, `at least once`, or `at most once` manner.
 - ... and more.
+
+The repository [contube-thirdparty](https://github.com/RobertIndie/contube-thirdparty) provides serveral implementations
+of `Tube`. These include tubes for executing Kafka Connectors and Pulsar IO Connectors, as well as tubes for interacting
+with the Pulsar system. We are working on additional implementations.
 
 ## Example
 
