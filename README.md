@@ -92,7 +92,7 @@ configuration is located in the `mongodb-source.yaml` file:
 ```yaml
 name: mongo-source
 type: source
-class: com.zikeyang.contube.kafka.connect.source.KafkaConnectSourceTube
+class: io.github.contube.kafka.connect.source.KafkaConnectSourceTube
 sinkTubeName: es-sink
 config:
   mongodb.hosts: "rs0/mongodb:27017"
@@ -117,7 +117,7 @@ configuration is located in the `es-sink.yaml` file:
 ```yaml
 name: es-sink
 type: sink
-class: com.zikeyang.contube.pulsar.connect.sink.PulsarConnectSinkTube
+class: io.github.contube.pulsar.connect.sink.PulsarConnectSinkTube
 config:
   archive: "./tubes/pulsar-io-elastic-search-3.1.1.nar"
   connectorConfig:
@@ -180,7 +180,7 @@ Check the data in Elastic Search:
 curl -s http://localhost:9200/my_index/_refresh
 
 # Search documents:
-curl -s http://localhost:9200/my_index/_search
+curl -s http://localhost:9200/my_index/_search | jq 
 ```
 
 The search should return data containing the following document:
@@ -215,7 +215,7 @@ into the `/contube/libs` path of the Contube container, add the tube configurati
 run the Contube container.
 
 Note: If you encounter connection issues with the Contube container, try restarting the container by
-running `docker-compose restart contube`. If you encounter other issues, please feel free to open an issue.
+running `docker-compose restart contube-test`. If you encounter other issues, please feel free to open an issue.
 
 ## How to Build
 

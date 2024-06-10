@@ -22,7 +22,7 @@ Configuration:
         - ref: Console
 
     Logger:
-      - name: com.zikeyang.contube
+      - name: io.github.contube
         level: debug
         additivity: false
         AppenderRef:

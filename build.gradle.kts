@@ -12,7 +12,7 @@ repositories {
 
 allprojects {
     buildDir = File("${rootProject.buildDir}/${name}")
-    group = "com.zikeyang.contube"
+    group = "io.github.contube-org"
     version = "1.0-SNAPSHOT"
 }
 
