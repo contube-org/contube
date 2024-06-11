@@ -2,6 +2,7 @@ package io.github.contube.runtime;
 
 import io.github.contube.api.Connect;
 import io.github.contube.api.Source;
+import io.github.contube.api.TubeConfig;
 import io.github.contube.api.TubeRecord;
 import io.github.contube.common.TombstoneRecord;
 import java.util.Collection;
@@ -10,15 +11,11 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class SourceTube extends Tube {
-  final String sinkTubeName;
   Source source;
+  Connect.Sender sender;
 
   public SourceTube(TubeConfig config, Connect con) {
     super(config, con);
-    sinkTubeName = config.getSinkTubeName();
-    if (sinkTubeName == null) {
-      throw new IllegalArgumentException("Sink tube name is null");
-    }
   }
 
   @Override
@@ -26,12 +23,13 @@ public class SourceTube extends Tube {
     super.init();
     source = createTube(config.getClazz(), Source.class);
     source.open(config.getConfig(), createContext());
+    sender = con.getSender(config);
   }
 
   @SneakyThrows
   void runTube() {
     Collection<TubeRecord> records = source.read();
-    con.send(sinkTubeName, records).exceptionally(e -> {
+    sender.send(records).exceptionally(e -> {
       log.error("Send record failed", e);
       return null;
     });

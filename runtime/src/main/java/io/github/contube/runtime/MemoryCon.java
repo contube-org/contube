@@ -1,12 +1,15 @@
 package io.github.contube.runtime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
 import io.github.contube.api.Connect;
+import io.github.contube.api.TubeConfig;
 import io.github.contube.api.TubeRecord;
 import io.github.contube.common.ConRetriableException;
+import io.github.contube.common.Utils;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -32,8 +35,7 @@ public class MemoryCon implements Connect {
   Map<String, Consumer<Collection<TubeRecord>>> tubeMap = new ConcurrentHashMap<>();
 
   @SneakyThrows
-  @Override
-  public CompletableFuture<Void> send(String tubeName, Collection<TubeRecord> records) {
+  CompletableFuture<Void> send(String tubeName, Collection<TubeRecord> records) {
     CompletableFuture<Void> future = new CompletableFuture<>();
     executorService.submit(() -> {
       Callable<Void> sendTask = () -> {
@@ -52,6 +54,27 @@ public class MemoryCon implements Connect {
     return future;
   }
 
+  class SenderImpl implements Sender {
+    final String tubeName;
+    SenderImpl(String tubeName) {
+        this.tubeName = tubeName;
+    }
+    @Override
+    public CompletableFuture<Void> send(Collection<TubeRecord> records) {
+      return MemoryCon.this.send(tubeName, records);
+    }
+  }
+
+  static class SenderConfig {
+    @JsonProperty(required = true)
+    String sinkTubeName;
+  }
+
+  @Override
+  public Sender getSender(TubeConfig config) throws IllegalArgumentException {
+      return new SenderImpl(Utils.loadConfig(config.getCon(), SenderConfig.class).sinkTubeName);
+  }
+
   void internalSend(String tubeName, Collection<TubeRecord> records) throws ConRetriableException {
     if (!tubeMap.containsKey(tubeName)) {
       throw new ConRetriableException(new Exception(String.format("Tube %s not found", tubeName)));
@@ -60,13 +83,17 @@ public class MemoryCon implements Connect {
     recordConsumer.accept(records);
   }
 
-  @Override
-  public void register(String tubeName, Consumer<Collection<TubeRecord>> recordConsumer) {
+  void register(String tubeName, Consumer<Collection<TubeRecord>> recordConsumer) {
     if (tubeMap.containsKey(tubeName)) {
       throw new IllegalStateException(String.format("Tube %s already registered", tubeName));
     }
     tubeMap.put(tubeName, recordConsumer);
     log.info("Register tube {} to memory con", tubeName);
+  }
+
+  @Override
+  public void addReceiver(TubeConfig config, Consumer<Collection<TubeRecord>> recordConsumer) {
+    register(config.getName(), recordConsumer);
   }
 
   @Override

@@ -1,5 +1,7 @@
 name: file-sink
 type: sink
 class: io.github.contube.example.file.FileSink
+con:
+  tubeName: file-sink
 config:
   path: 'examples/test-result-sink.txt'

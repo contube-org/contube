@@ -10,22 +10,31 @@ import java.util.function.Consumer;
  */
 public interface Connect extends AutoCloseable {
 
+  interface Sender {
+    /**
+     * Asynchronously sends a collection of records.
+     *
+     * @param records The collection of records to be sent.
+     * @return A CompletableFuture that will be completed once the sending operation has been accomplished.
+     */
+    CompletableFuture<Void> send(Collection<TubeRecord> records);
+  }
+
   /**
-   * Dispatches a collection of records to a specified tube asynchronously.
+   * Get a Sender instance for a specified tube configuration to dispatch records asynchronously.
    *
-   * @param tubeName The name of the destination tube.
-   * @param records  The collection of records to be dispatched.
-   * @return A CompletableFuture that will be completed once the sending operation has been accomplished.
+   * @param tubeConfig The configuration of the destination tube.
+   * @return A Sender instance that can be used to send records to the specified tube.
    */
-  CompletableFuture<Void> send(String tubeName, Collection<TubeRecord> records);
+  Sender getSender(TubeConfig tubeConfig);
 
   /**
    * Registers a consumer to process incoming records from a specified tube.
    * The registered consumer will be invoked when new records are available.
    *
-   * @param tubeName       The name of the tube from which records are received.
+   * @param tubeConfig     The configuration of the tube from which records are received.
    * @param recordConsumer The consumer that will process the incoming records.
    */
-  void register(String tubeName, Consumer<Collection<TubeRecord>> recordConsumer);
+  void addReceiver(TubeConfig tubeConfig, Consumer<Collection<TubeRecord>> recordConsumer);
 }
 

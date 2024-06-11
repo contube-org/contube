@@ -1,4 +1,4 @@
-package io.github.contube.runtime;
+package io.github.contube.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
@@ -20,11 +20,15 @@ public class TubeConfig {
   @JsonProperty(required = true)
   private String name;
 
-  private String sinkTubeName;
+  private Map<String, Object> con;
 
   private Map<String, Object> config;
 
   public Map<String, Object> getConfig() {
     return config == null ? new HashMap<>(0) : config;
+  }
+
+  public Map<String, Object> getCon() {
+    return con == null ? new HashMap<>(0) : con;
   }
 }

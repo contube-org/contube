@@ -1,6 +1,7 @@
 package io.github.contube.runtime;
 
 import io.github.contube.api.Connect;
+import io.github.contube.api.TubeConfig;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.log4j.Log4j2;

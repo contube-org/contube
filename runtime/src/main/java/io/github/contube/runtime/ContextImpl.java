@@ -1,6 +1,7 @@
 package io.github.contube.runtime;
 
 import io.github.contube.api.Context;
+import io.github.contube.api.TubeConfig;
 import java.util.function.Consumer;
 
 public class ContextImpl implements Context {

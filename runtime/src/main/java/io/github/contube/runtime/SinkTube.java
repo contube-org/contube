@@ -2,6 +2,7 @@ package io.github.contube.runtime;
 
 import io.github.contube.api.Connect;
 import io.github.contube.api.Sink;
+import io.github.contube.api.TubeConfig;
 import io.github.contube.api.TubeRecord;
 import io.github.contube.common.TombstoneRecord;
 import java.util.Collection;
@@ -31,7 +32,7 @@ public class SinkTube extends Tube {
     super.init();
     sink = createTube(config.getClazz(), Sink.class);
     sink.open(config.getConfig(), context);
-    con.register(config.getName(), this::write);
+    con.addReceiver(config, this::write);
   }
 
   @SneakyThrows
