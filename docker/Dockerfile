@@ -1,6 +1,6 @@
 FROM eclipse-temurin:17
 
-COPY runtime/build/libs /contube/builtin-lib
+COPY build/contube/libs /contube/builtin-lib
 COPY libs /contube/builtin-lib
 COPY bin /contube/bin
 COPY conf /contube/conf

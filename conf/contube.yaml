@@ -1,6 +1,6 @@
 tubeType:
   - name: sink
-    class: com.zikeyang.contube.runtime.SinkTube
+    class: io.github.contube.runtime.SinkTube
   - name: source
-    class: com.zikeyang.contube.runtime.SourceTube
-conType: com.zikeyang.contube.runtime.MemoryCon
+    class: io.github.contube.runtime.SourceTube
+conType: io.github.contube.runtime.MemoryCon
